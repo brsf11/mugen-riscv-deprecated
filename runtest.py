@@ -88,6 +88,5 @@ for i in range(len(testlist)):
     else:
         successtestnum.append(len(temp))
 
-    if(failedtestnum[i] != 0):
-        print("Target "+testlist[i]+" tested "+str(successtestnum[i]+failedtestnum[i])+" cases, failed "+str(failedtestnum[i])+" cases")
+    print("Target "+testlist[i]+" tested "+str(successtestnum[i]+failedtestnum[i])+" cases, failed "+str(failedtestnum[i])+" cases")
 
