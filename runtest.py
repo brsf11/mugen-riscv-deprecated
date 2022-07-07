@@ -44,7 +44,7 @@ else:
     print("logs cleared")
 
 try:
-    os.removedirs("logs_failed")
+    os.system("rm -rf logs_failed")
 except:
     print("no logs_failed")
 else:
