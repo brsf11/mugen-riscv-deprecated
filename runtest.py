@@ -64,7 +64,7 @@ os.mkdir("logs_failed")
 
 for i in range(len(testlist)):
     try:
-        temp = os.listdir("results/"+testlist[i]+"failed")
+        temp = os.listdir("results/"+testlist[i]+"/failed")
     except:
         failedtestnum.append(0)
     else:
@@ -74,7 +74,7 @@ for i in range(len(testlist)):
             os.system("cp logs/"+testlist[i]+"/"+temp[j]+"/*.log logs_failed/"+testlist[i]+"/"+temp[j]+"/")
 
     try:
-        temp = os.listdir("results/"+testlist[i]+"succeed")
+        temp = os.listdir("results/"+testlist[i]+"/succeed")
     except:
         successtestnum.append(0)
     else:
