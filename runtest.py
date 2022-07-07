@@ -34,26 +34,33 @@ for i in range(unavalnum):
     testlist.remove(unavaltest[i])
 
 print("available test targets num = ",len(testlist))
-# print("clear logs and results")
+print("clear logs and results")
 
-# try:
-#     os.removedirs("logs/*")
-# except:
-#     print("no logs")
-# else:
-#     print("logs cleared")
+try:
+    os.removedirs("logs/*")
+except:
+    print("no logs")
+else:
+    print("logs cleared")
 
-# try:
-#     os.removedirs("results/*")
-# except:
-#     print("no results")
-# else:
-#     print("results cleared")
+try:
+    os.removedirs("logs_failed")
+except:
+    print("no logs_failed")
+else:
+    print("logs_failed cleared")
 
-# print("start to run tests")
+try:
+    os.removedirs("results/*")
+except:
+    print("no results")
+else:
+    print("results cleared")
 
-# for i in range(len(testlist)):
-#     os.system("sudo bash mugen.sh -f "+testlist[i])
+print("start to run tests")
+
+for i in range(len(testlist)):
+    os.system("sudo bash mugen.sh -f "+testlist[i])
 
 failedtestnum = []
 successtestnum = []
