@@ -71,6 +71,7 @@ for i in range(len(testlist)):
         failedtestnum.append(len(temp))
         os.mkdir("logs_failed/"+testlist[i])
         for j in range(len(temp)):
+            os.mkdir("logs_failed/"+testlist[i]+"/"+temp[j]+"/")
             os.system("cp logs/"+testlist[i]+"/"+temp[j]+"/*.log logs_failed/"+testlist[i]+"/"+temp[j]+"/")
 
     try:
