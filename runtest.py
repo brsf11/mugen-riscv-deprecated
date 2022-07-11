@@ -1,18 +1,13 @@
 import os
 import sys
 
-class TestBase(object):
-    """
-    Test base class
-    """
+def LogInfo(log_content=""):
+    print("INFO:  "+log_content)
 
-    def LogInfo(log_content):
-        print("INFO:  "+log_content)
+def LogError(log_content=""):
+    print("ERROR: "+log_content)
 
-    def LogError(log_content):
-        print("ERROR: "+log_content)
-
-class TestEnv(TestBase):
+class TestEnv():
     """
     Test environment
     """
@@ -34,7 +29,7 @@ class TestEnv(TestBase):
         os.system("rm -rf ./logs_failed/*")
         self.is_cleared = 1
 
-class TestTarget(TestBase):
+class TestTarget():
     """
     Test targets
     """
@@ -79,7 +74,7 @@ class TestTarget(TestBase):
 
     def PrintAvalTargets(self):
         if(self.is_checked != 1):
-            self.LogError("Targets are not checked!")
+            LogError("Targets are not checked!")
             return 1
         else:
             print("Available test targets:")
@@ -88,7 +83,7 @@ class TestTarget(TestBase):
 
     def Run(self):
         if(self.is_checked != 1):
-            self.LogError("Targets are not checked!")
+            LogError("Targets are not checked!")
             return 1
         else:
             for test_target in self.test_list :
@@ -98,7 +93,7 @@ class TestTarget(TestBase):
 
     def CheckResults(self,detailed = 0):
         if(self.is_tested != 1):
-            self.LogError("Targets are not tested!")
+            LogError("Targets are not tested!")
             return 1
         else:
             for test_target in self.test_list :
