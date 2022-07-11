@@ -1,92 +1,159 @@
+from cgi import test
 import os
 import sys
 
-if len(sys.argv) == 1:
-    print("Error: need to specify test list")
-    print("Usage: python3 runtest.py testlist")
-    sys.exit(-1)
+class TestBase(object):
+    """
+    Test base class
+    """
 
-listfilename = sys.argv[1]
+    def LogInfo(log_content):
+        print("INFO:  "+log_content)
 
-listfile = open(listfilename,'r')
-raw = listfile.read()
-testlist = raw.split(sep="\n")
-listfile.close()
+    def LogError(log_content):
+        print("ERROR: "+log_content)
 
-suite2casespath = "./suite2cases"
-suitelist = os.listdir(suite2casespath)
+class TestEnv(TestBase):
+    """
+    Test environment
+    """
 
-for i in range(len(suitelist)):
-    suitelist[i] = suitelist[i].replace(".json","")
+    def __init__(self):
+        self.is_cleared = 0
+        self.suite_cases_path = "./suite2cases"
+        self.suite_list = os.listdir(self.suite_cases_path)
 
-print("total test targets num = ",len(testlist))
-print("available test suites num = ",len(suitelist))
+        for i in range(len(self.suite_list)):
+            self.suite_list[i] = self.suite_list[i].replace(".json","")
 
-unavalnum = 0
-unavaltest = []
-for i in range(len(testlist)):
-    if(testlist[i] not in suitelist):
-        print("test tartget ",testlist[i]," is not available, please check typo or write the test script and suite2cases")
-        unavalnum += 1
-        unavaltest.append(testlist[i])
+    def PrintSuiteNum(self):
+        print("Available test suites num = "+str(len(self.suite_list)))
 
-for i in range(unavalnum):
-    testlist.remove(unavaltest[i])
+    def ClearEnv(self):
+        os.system("rm -rf ./logs/*")
+        os.system("rm -rf ./results/*")
+        os.system("rm -rf ./logs_failed/*")
+        self.is_cleared = 1
 
-print("available test targets num = ",len(testlist))
-print("clear logs and results")
+class TestTarget(TestBase):
+    """
+    Test targets
+    """
 
-try:
-    os.removedirs("logs/*")
-except:
-    print("no logs")
-else:
-    print("logs cleared")
+    def __init__(self,list_file_name):
+        self.is_checked = 0
+        self.is_tested = 0
+        self.test_list = []
+        self.unaval_test = []
 
-try:
-    os.system("rm -rf logs_failed")
-except:
-    print("no logs_failed")
-else:
-    print("logs_failed cleared")
+        self.success_test_num = []
+        self.failed_test_num = []
 
-try:
-    os.removedirs("results/*")
-except:
-    print("no results")
-else:
-    print("results cleared")
+        list_file = open(list_file_name,'r')
+        raw = list_file.read()
+        self.test_list = raw.split(sep="\n")
+        list_file.close()
 
-print("start to run tests")
+    def PrintTargetNum(self):
+        print("total test targets num = "+str(len(self.test_list)))
 
-for i in range(len(testlist)):
-    os.system("sudo bash mugen.sh -f "+testlist[i])
+    def CheckTargets(self,test_env):
+        self.unaval_test = []
+        for test_target in self.test_list :
+            if(test_target not in test_env.suite_list):
+                self.unaval_test.append(test_target)
 
-failedtestnum = []
-successtestnum = []
+        for test_target in self.unaval_test :
+            self.test_list.remove(test_target)
 
-temp = []
+        self.is_checked = 1
 
-os.mkdir("logs_failed")
+    def printTargets(self):
+        print("All targets:")
+        for test_target in self.test_list :
+            print(test_target)
 
-for i in range(len(testlist)):
-    try:
-        temp = os.listdir("results/"+testlist[i]+"/failed")
-    except:
-        failedtestnum.append(0)
-    else:
-        failedtestnum.append(len(temp))
-        os.mkdir("logs_failed/"+testlist[i])
-        for j in range(len(temp)):
-            os.mkdir("logs_failed/"+testlist[i]+"/"+temp[j]+"/")
-            os.system("cp logs/"+testlist[i]+"/"+temp[j]+"/*.log logs_failed/"+testlist[i]+"/"+temp[j]+"/")
+    def PrintUnavalTargets(self):
+        print("Unavailable test targets:")
+        for test_target in self.unaval_test :
+            print(test_target)
 
-    try:
-        temp = os.listdir("results/"+testlist[i]+"/succeed")
-    except:
-        successtestnum.append(0)
-    else:
-        successtestnum.append(len(temp))
+    def PrintAvalTargets(self):
+        if(self.is_checked != 1):
+            self.LogError("Targets are not checked!")
+            return 1
+        else:
+            print("Available test targets:")
+            for test_target in self.test_list :
+                print(test_target)
 
-    print("Target "+testlist[i]+" tested "+str(successtestnum[i]+failedtestnum[i])+" cases, failed "+str(failedtestnum[i])+" cases")
+    def Run(self):
+        if(self.is_checked != 1):
+            self.LogError("Targets are not checked!")
+            return 1
+        else:
+            for test_target in self.test_list :
+                os.system("sudo bash mugen.sh -f "+test_target)
 
+            self.is_tested = 1
+
+    def CheckResults(self,detailed = 0):
+        if(self.is_tested != 1):
+            self.LogError("Targets are not tested!")
+            return 1
+        else:
+            for test_target in self.test_list :
+                temp = []
+
+                try:
+                    temp = os.listdir("results/"+test_target+"/failed")
+                except:
+                    failed_num = 0
+                    self.failed_test_num.append(failed_num)
+                else:
+                    failed_num = len(temp)
+                    self.failed_test_num.append(failed_num)
+                    os.mkdir("logs_failed/"+test_target)
+                    for failed_test in temp :
+                        os.mkdir("logs_failed/"+test_target+"/"+failed_test+"/")
+                        os.system("cp logs/"+test_target+"/"+failed_test+"/*.log logs_failed/"+test_target+"/"+failed_test+"/")
+
+                try:
+                    temp = os.listdir("results/"+test_target+"/succeed")
+                except:
+                    success_num = 0
+                    self.success_test_num.append(success_num)
+                else:
+                    success_num = len(temp)
+                    self.success_test_num.append(success_num)
+                
+                if(detailed == 0):
+                    print("Target "+test_target+" tested "+str(success_num+failed_num)+" cases, failed "+str(failed_num)+" cases")
+                else:
+                    print("Target "+test_target+" tested "+str(success_num+failed_num)+" cases, failed "+str(failed_num)+" cases")
+                    for failed_test in temp :
+                        print("Failed test: "+failed_test)
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Error: need to specify test list")
+        print("Usage: python3 runtest.py test_list")
+        sys.exit(-1)
+
+    test_env = TestEnv()
+    test_env.ClearEnv()
+    test_env.PrintSuiteNum()
+
+    test_target = TestTarget(list_file_name=sys.argv[1])
+    test_target.PrintTargetNum()
+    test_target.CheckTargets(test_env=test_env)
+    test_target.PrintUnavalTargets()
+    test_target.PrintAvalTargets()
+    test_target.Run()
+    test_target.CheckResults(detailed=1)
