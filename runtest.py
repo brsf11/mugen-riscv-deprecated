@@ -1,4 +1,3 @@
-from cgi import test
 import os
 import sys
 
@@ -103,40 +102,36 @@ class TestTarget(TestBase):
             return 1
         else:
             for test_target in self.test_list :
-                temp = []
-
+                temp_failed = []
                 try:
-                    temp = os.listdir("results/"+test_target+"/failed")
+                    temp_failed = os.listdir("results/"+test_target+"/failed")
                 except:
                     failed_num = 0
                     self.failed_test_num.append(failed_num)
                 else:
-                    failed_num = len(temp)
+                    failed_num = len(temp_failed)
                     self.failed_test_num.append(failed_num)
                     os.mkdir("logs_failed/"+test_target)
-                    for failed_test in temp :
+                    for failed_test in temp_failed :
                         os.mkdir("logs_failed/"+test_target+"/"+failed_test+"/")
                         os.system("cp logs/"+test_target+"/"+failed_test+"/*.log logs_failed/"+test_target+"/"+failed_test+"/")
 
+                temp_success = []
                 try:
-                    temp = os.listdir("results/"+test_target+"/succeed")
+                    temp_success = os.listdir("results/"+test_target+"/succeed")
                 except:
                     success_num = 0
                     self.success_test_num.append(success_num)
                 else:
-                    success_num = len(temp)
+                    success_num = len(temp_success)
                     self.success_test_num.append(success_num)
                 
                 if(detailed == 0):
                     print("Target "+test_target+" tested "+str(success_num+failed_num)+" cases, failed "+str(failed_num)+" cases")
                 else:
                     print("Target "+test_target+" tested "+str(success_num+failed_num)+" cases, failed "+str(failed_num)+" cases")
-                    for failed_test in temp :
+                    for failed_test in temp_failed :
                         print("Failed test: "+failed_test)
-
-
-
-
 
 
 
