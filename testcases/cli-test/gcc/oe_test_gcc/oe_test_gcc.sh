@@ -19,7 +19,7 @@ function run_test() {
     CHECK_RESULT $?
     ./test | grep "Hello world!" > /dev/null
     CHECK_RESULT $?
-    objdump ./test | grep "<main>" > /dev/null
+    objdump -D ./test | grep "<main>" > /dev/null
     CHECK_RESULT $?
     LOG_INFO "End to run test."
 }
