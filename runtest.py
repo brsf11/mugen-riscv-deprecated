@@ -90,7 +90,7 @@ class TestTarget():
             return 1
         else:
             for test_target in tqdm(self.test_list) :
-                os.system("sudo bash mugen.sh -f > exec.log"+test_target)
+                os.system("sudo bash mugen.sh -f "+test_target+" > exec.log")
                 temp_failed = []
                 try:
                     temp_failed = os.listdir("results/"+test_target+"/failed")
