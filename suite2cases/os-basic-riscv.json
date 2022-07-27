@@ -17,9 +17,6 @@
             "name": "oe_test_versioninfo"
         },
         {
-            "name": "oe_test_uname"
-        },
-        {
             "name": "oe_test_timedatectl"
         },
         {
@@ -120,9 +117,6 @@
         },
         {
             "name":"oe_test_IOaccess_1Gfile"
-        },
-        {
-            "name":"oe_test_kernel_module_operation"
         },
         {
             "name":"oe_test_man"
