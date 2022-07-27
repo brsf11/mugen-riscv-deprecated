@@ -27,6 +27,8 @@ class TestEnv():
         os.system("rm -rf ./logs/*")
         os.system("rm -rf ./results/*")
         os.system("rm -rf ./logs_failed/*")
+        if "logs_faield" not in os.listdir("."):
+            os.system("mkdir logs_failed")
         self.is_cleared = 1
 
 class TestTarget():
