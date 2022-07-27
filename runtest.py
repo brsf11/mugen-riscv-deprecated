@@ -1,5 +1,6 @@
 import os
 import sys
+from tqdm import tqdm
 
 def LogInfo(log_content=""):
     print("INFO:  "+log_content)
@@ -83,13 +84,13 @@ class TestTarget():
             for test_target in self.test_list :
                 print(test_target)
 
-    def Run(self):
+    def Run(self,detailed = 0):
         if(self.is_checked != 1):
             LogError("Targets are not checked!")
             return 1
         else:
-            for test_target in self.test_list :
-                os.system("sudo bash mugen.sh -f "+test_target)
+            for test_target in tqdm(self.test_list) :
+                os.system("sudo bash mugen.sh -f > exec.log"+test_target)
                 temp_failed = []
                 try:
                     temp_failed = os.listdir("results/"+test_target+"/failed")
@@ -114,26 +115,13 @@ class TestTarget():
                     success_num = len(temp_success)
                     self.success_test_num.append(success_num)
 
+                print("Target "+test_target+" tested "+str(success_num+failed_num)+" cases, failed "+str(failed_num)+" cases")
+                if(detailed == 1):
+                    for failed_test in temp_failed :
+                        print("Failed test: "+failed_test)
+
             self.is_tested = 1
 
-    def CheckResults(self,detailed = 0):
-        if(self.is_tested != 1):
-            LogError("Targets are not tested!")
-            return 1
-        else:
-            i = 0
-            for test_target in self.test_list :
-                print("Target "+test_target+" tested "+str(self.success_test_num[i]+self.failed_test_num[i])+" cases, failed "+str(self.failed_test_num[i])+" cases")
-                if(detailed == 1):
-                    try:
-                        temp_failed = os.listdir("results/"+test_target+"/failed")
-                    except:
-                        print("Target "+test_target+" doesn't have failed test")
-                    else:
-                        for failed_test in temp_failed :
-                            print("Failed test: "+failed_test)
-                        
-                i += 1
 
 
 
@@ -152,5 +140,4 @@ if __name__ == "__main__":
     test_target.CheckTargets(test_env=test_env)
     test_target.PrintUnavalTargets()
     test_target.PrintAvalTargets()
-    test_target.Run()
-    test_target.CheckResults(detailed=1)
+    test_target.Run(detailed=1)
