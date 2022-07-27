@@ -123,8 +123,13 @@ class TestTarget():
             for test_target in self.test_list :
                 print("Target "+test_target+" tested "+str(self.success_test_num[i]+self.failed_test_num[i])+" cases, failed "+str(self.failed_test_num[i])+" cases")
                 if(detailed == 1):
-                    for failed_test in os.listdir("results/"+test_target+"/failed") :
-                        print("Failed test: "+failed_test)
+                    try:
+                        temp_failed = os.listdir("results/"+test_target+"/failed")
+                    except:
+                        print("Target "+test_target+" doesn't have failed test")
+                    else:
+                        for failed_test in temp_failed :
+                            print("Failed test: "+failed_test)
                         
                 i += 1
 
