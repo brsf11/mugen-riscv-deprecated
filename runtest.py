@@ -28,7 +28,8 @@ class TestEnv():
         os.system("rm -rf ./logs/*")
         os.system("rm -rf ./results/*")
         os.system("rm -rf ./logs_failed/*")
-        if "logs_faield" not in os.listdir("."):
+        os.system("rm -f ./exec.log")
+        if "logs_failed" not in os.listdir("."):
             os.system("mkdir logs_failed")
         self.is_cleared = 1
 
@@ -89,8 +90,8 @@ class TestTarget():
             LogError("Targets are not checked!")
             return 1
         else:
-            for test_target in tqdm(self.test_list) :
-                os.system("sudo bash mugen.sh -f "+test_target+" > exec.log")
+            for test_target in tqdm(self.test_list,file=sys.stdout,unit='case') :
+                os.system("sudo bash mugen.sh -f "+test_target+" 2>> exec.log")
                 temp_failed = []
                 try:
                     temp_failed = os.listdir("results/"+test_target+"/failed")
@@ -115,10 +116,10 @@ class TestTarget():
                     success_num = len(temp_success)
                     self.success_test_num.append(success_num)
 
-                print("Target "+test_target+" tested "+str(success_num+failed_num)+" cases, failed "+str(failed_num)+" cases")
+                tqdm.write("Target "+test_target+" tested "+str(success_num+failed_num)+" cases, failed "+str(failed_num)+" cases")
                 if(detailed == 1):
                     for failed_test in temp_failed :
-                        print("Failed test: "+failed_test)
+                        tqdm.write("Failed test: "+failed_test)
 
             self.is_tested = 1
 
