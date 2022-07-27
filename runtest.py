@@ -88,15 +88,6 @@ class TestTarget():
         else:
             for test_target in self.test_list :
                 os.system("sudo bash mugen.sh -f "+test_target)
-
-            self.is_tested = 1
-
-    def CheckResults(self,detailed = 0):
-        if(self.is_tested != 1):
-            LogError("Targets are not tested!")
-            return 1
-        else:
-            for test_target in self.test_list :
                 temp_failed = []
                 try:
                     temp_failed = os.listdir("results/"+test_target+"/failed")
@@ -106,9 +97,9 @@ class TestTarget():
                 else:
                     failed_num = len(temp_failed)
                     self.failed_test_num.append(failed_num)
-                    os.mkdir("logs_failed/"+test_target)
+                    os.system("mkdir logs_failed/"+test_target)
                     for failed_test in temp_failed :
-                        os.mkdir("logs_failed/"+test_target+"/"+failed_test+"/")
+                        os.system("mkdir logs_failed/"+test_target+"/"+failed_test+"/")
                         os.system("cp logs/"+test_target+"/"+failed_test+"/*.log logs_failed/"+test_target+"/"+failed_test+"/")
 
                 temp_success = []
@@ -120,13 +111,22 @@ class TestTarget():
                 else:
                     success_num = len(temp_success)
                     self.success_test_num.append(success_num)
-                
-                if(detailed == 0):
-                    print("Target "+test_target+" tested "+str(success_num+failed_num)+" cases, failed "+str(failed_num)+" cases")
-                else:
-                    print("Target "+test_target+" tested "+str(success_num+failed_num)+" cases, failed "+str(failed_num)+" cases")
-                    for failed_test in temp_failed :
+
+            self.is_tested = 1
+
+    def CheckResults(self,detailed = 0):
+        if(self.is_tested != 1):
+            LogError("Targets are not tested!")
+            return 1
+        else:
+            i = 0
+            for test_target in self.test_list :
+                print("Target "+test_target+" tested "+str(self.success_test_num[i]+self.failed_test_num[i])+" cases, failed "+str(self.failed_test_num[i])+" cases")
+                if(detailed == 1):
+                    for failed_test in os.listdir("results/"+test_target+"/failed") :
                         print("Failed test: "+failed_test)
+                        
+                i += 1
 
 
 
